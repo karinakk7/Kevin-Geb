@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vincent & Kevin werden 30!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  :root{
+    --bg:#F5F1EA;
+    --card:#FFFFFF;
+    --ink:#38332C;
+    --ink-soft:#8C8375;
+    --ink-faint:#B3AA9C;
+    --line:#E5DFD2;
+    --accent:#A6875E;
+    --accent-soft:#EFE6D5;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 18px;}
+  .icon{width:18px;height:18px;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+
+  /* HERO */
+  .hero{
+    position:relative;
+    overflow:hidden;
+    padding:40px 0 22px;
+  }
+  .hero-num{
+    position:absolute;
+    top:-30px; right:-14px;
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:200px;
+    line-height:1;
+    color:var(--ink);
+    opacity:0.05;
+    letter-spacing:-8px;
+    pointer-events:none;
+    user-select:none;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:7px;
+    font-size:12.5px; font-weight:600; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--ink-soft);
+    background:#fff; border:1px solid var(--line);
+    padding:6px 12px; border-radius:8px;
+  }
+  .eyebrow .icon{width:14px;height:14px;color:var(--ink-soft);}
+  h1.title{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(32px,7.5vw,50px);
+    line-height:1.05;
+    margin:16px 0 6px;
+    letter-spacing:-0.01em;
+  }
+  .subtitle{
+    color:var(--ink-soft); font-size:15.5px; max-width:48ch; margin:0 0 22px; line-height:1.5;
+  }
+
+  .basics{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+  }
+  @media (max-width:560px){ .basics{grid-template-columns:1fr;} }
+  .basic-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 15px 13px;
+  }
+  .basic-card .top-row{display:flex; align-items:center; gap:7px; color:var(--ink-soft);}
+  .basic-card .lbl{
+    font-size:11px; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--ink-soft); font-weight:600;
+  }
+  .basic-card .val{
+    font-size:15.5px; font-weight:600; margin-top:6px;
+    word-break:break-word; color:var(--ink);
+  }
+  .basic-card a{color:var(--ink); text-decoration:none; border-bottom:1.5px solid var(--accent);}
+  .basic-card input{
+    font-family:'Inter',sans-serif;
+    font-size:15px; font-weight:600; color:var(--ink);
+    border:none; border-bottom:1.5px dashed var(--ink-faint);
+    background:transparent; width:100%; padding:6px 0 2px; margin-top:2px;
+    outline:none;
+  }
+  .basic-card input::placeholder{color:var(--ink-faint); font-weight:500;}
+  .basic-card input:focus{border-bottom-color:var(--accent);}
+
+  .countdown{
+    margin-top:12px;
+    display:flex; gap:8px; flex-wrap:wrap;
+  }
+  .chip{
+    background:var(--ink); color:#fff;
+    border-radius:8px; padding:8px 14px;
+    font-size:13px; font-weight:600;
+    display:flex; align-items:center; gap:7px;
+  }
+  .chip .icon{color:#D8CFBF;}
+  .chip b{font-weight:700; color:#fff;}
+
+  /* TABS */
+  .tabs{
+    display:flex; gap:6px; overflow-x:auto;
+    margin:32px 0 18px; padding-bottom:2px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab-btn{
+    flex:0 0 auto;
+    display:flex; align-items:center; gap:7px;
+    background:var(--card); border:1px solid var(--line);
+    padding:10px 16px; border-radius:10px;
+    font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; color:var(--ink-soft);
+    cursor:pointer; transition:.15s ease;
+    white-space:nowrap;
+  }
+  .tab-btn .icon{color:var(--ink-soft);}
+  .tab-btn .count{
+    background:var(--bg); color:var(--ink-soft);
+    font-size:11px; padding:2px 7px; border-radius:6px; font-weight:700;
+  }
+  .tab-btn.active{
+    background:var(--ink); color:#fff; border-color:var(--ink);
+  }
+  .tab-btn.active .icon{color:#fff;}
+  .tab-btn.active .count{background:var(--accent); color:#fff;}
+
+  .panel{display:none; animation:fade .2s ease;}
+  .panel.active{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(3px);} to{opacity:1; transform:translateY(0);}}
+
+  .progress-row{
+    display:flex; align-items:center; gap:12px; margin-bottom:16px;
+  }
+  .progress-track{
+    flex:1; height:6px; background:var(--line); border-radius:999px; overflow:hidden;
+  }
+  .progress-fill{
+    height:100%; background:var(--accent);
+    border-radius:999px; transition:width .3s ease; width:0%;
+  }
+  .progress-txt{font-size:13px; font-weight:600; color:var(--ink-soft); white-space:nowrap;}
+
+  /* ADD FORM */
+  .add-form{
+    display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;
+  }
+  .add-form input[type="text"]{
+    flex:1 1 180px;
+  }
+  .add-form input[type="number"]{
+    width:72px;
+  }
+  input[type="text"], input[type="number"], textarea{
+    font-family:'Inter',sans-serif; font-size:15px;
+    padding:11px 13px; border-radius:10px;
+    border:1px solid var(--line); background:#fff;
+    color:var(--ink); outline:none;
+  }
+  input[type="text"]:focus, input[type="number"]:focus, textarea:focus{
+    border-color:var(--accent);
+  }
+  .btn{
+    font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px;
+    border:none; border-radius:10px; cursor:pointer;
+    padding:11px 16px; display:inline-flex; align-items:center; gap:6px;
+    transition:transform .12s ease;
+  }
+  .btn:active{transform:scale(0.96);}
+  .btn-primary{background:var(--ink); color:#fff;}
+  .btn .icon{width:15px;height:15px;}
+
+  /* LIST ITEMS */
+  .list{display:flex; flex-direction:column; gap:8px;}
+  .item{
+    background:var(--card); border:1px solid var(--line);
+    border-radius:12px; padding:11px 13px;
+    display:flex; align-items:center; gap:12px;
+    transition:opacity .2s ease;
+  }
+  .item.done{opacity:.5;}
+  .item.done .item-name{text-decoration:line-through; color:var(--ink-soft);}
+  .check{
+    flex:0 0 auto; width:22px; height:22px; border-radius:6px;
+    border:1.6px solid var(--ink-faint); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color:transparent; background:#fff;
+  }
+  .check .icon{width:13px;height:13px; color:#fff;}
+  .item.done .check{background:var(--ink); border-color:var(--ink);}
+  .item-name{flex:1; font-weight:500; font-size:14.5px; min-width:0; word-break:break-word;}
+  .qty-ctrl{
+    display:flex; align-items:center; gap:4px;
+    background:var(--bg); border-radius:8px; padding:3px;
+  }
+  .qty-ctrl button{
+    width:24px; height:24px; border:none; border-radius:6px; background:#fff;
+    font-weight:600; cursor:pointer; color:var(--ink); font-size:14px;
+  }
+  .qty-ctrl span{min-width:20px; text-align:center; font-weight:600; font-size:13.5px; color:var(--ink);}
+  .del{
+    flex:0 0 auto; width:28px; height:28px; border:none; background:none; cursor:pointer;
+    color:var(--ink-faint); display:flex; align-items:center; justify-content:center; border-radius:6px;
+  }
+  .del .icon{width:15px;height:15px;}
+  .del:hover{color:var(--ink); background:var(--bg);}
+
+  .empty{
+    text-align:center; padding:30px 16px; color:var(--ink-soft);
+    border:1.5px dashed var(--line); border-radius:12px; font-size:13.5px;
+  }
+  .empty .icon{width:22px;height:22px; display:block; margin:0 auto 8px; color:var(--ink-faint);}
+
+  /* NOTES */
+  .notes-section{margin-top:32px;}
+  .section-title{
+    font-size:15px; font-weight:600; margin-bottom:10px;
+    display:flex; align-items:center; gap:7px; color:var(--ink);
+    text-transform:uppercase; letter-spacing:.04em;
+  }
+  .section-title .icon{color:var(--ink-soft);}
+  textarea{
+    width:100%; min-height:100px; resize:vertical; line-height:1.5;
+  }
+
+  footer{
+    text-align:center; color:var(--ink-faint); font-size:12px; margin-top:40px;
+  }
+  .save-toast{
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:#fff; padding:9px 16px; border-radius:8px;
+    font-size:12.5px; font-weight:600; opacity:0; transition:.25s ease; pointer-events:none;
+    display:flex; align-items:center; gap:7px; z-index:50;
+  }
+  .save-toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-num">30</div>
+    <span class="eyebrow">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+      Die Planung läuft
+    </span>
+    <h1 class="title">Vincent & Kevin<br>werden 30!</h1>
+    <p class="subtitle">Alles Organisatorische an einem Ort – Getränke, Essen und Deko planen, abhaken sobald erledigt.</p>
+
+    <div class="basics">
+      <div class="basic-card">
+        <div class="top-row">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+          <span class="lbl">Datum</span>
+        </div>
+        <div class="val">15.08.2026</div>
+      </div>
+      <div class="basic-card">
+        <div class="top-row">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <span class="lbl">Uhrzeit</span>
+        </div>
+        <input id="uhrzeit-input" type="text" placeholder="noch offen">
+      </div>
+      <div class="basic-card">
+        <div class="top-row">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11.4A7 7 0 0 1 19 9.6C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.3"/></svg>
+          <span class="lbl">Location</span>
+        </div>
+        <div class="val"><a href="https://maps.google.com/maps?vet=10CAAQoqAOahcKEwjAhdKKvNGVAxUAAAAAHQAAAAAQCw..i&rlz=1C1GCEA_enDE1180DE1181&pvq=Cg0vZy8xMWNzYnFwNnc3IhMKDXJhZGxlciB2ZXJlaW4QAhgD&lqi=ChdyYWRsZXIgdmVyZWluIGLDvHJzdGFkdEjntqqr4auAgAhaHxAAEAEYAiIXcmFkbGVyIHZlcmVpbiBiw7xyc3RhZHSSARthc3NvY2lhdGlvbl9vcl9vcmdhbml6YXRpb266AQgKBnJhZGxlcg&fvr=1&cs=1&um=1&ie=UTF-8&fb=1&gl=de&sa=X&ftid=0x4797d463d13b2c13:0x15f992b5e536e5c3" target="_blank" rel="noopener">Wasserwerkstraße, 68642 Bürstadt</a></div>
+      </div>
+    </div>
+
+    <div class="countdown">
+      <div class="chip">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        noch <b id="days-left">–</b> Tage
+      </div>
+      <div class="chip">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16l-1.5 9.5a3 3 0 0 1-3 2.5h-5a3 3 0 0 1-3-2.5L6 4z"/><path d="M9 21h6M12 16v5"/></svg>
+        <b id="total-todo">–</b> offene Punkte
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab-btn active" data-tab="getraenke">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M7 3h10l-1 15a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2L7 3z"/><path d="M7.5 9h9"/></svg>
+      Getränke <span class="count" id="count-getraenke">0</span>
+    </button>
+    <button class="tab-btn" data-tab="essen">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M6 3v9a2 2 0 0 0 4 0V3M8 3v18M17 3c-1.5 1.5-2 3-2 5s.5 3 2 4v9"/></svg>
+      Essen <span class="count" id="count-essen">0</span>
+    </button>
+    <button class="tab-btn" data-tab="deko">
+      <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M3 12h18M12 8v13"/><path d="M8 8c-1.5 0-2.5-1-2.5-2.3S6.5 3.5 8 3.5 10.5 5 12 8c1.5-3 2.5-4.5 4-4.5s2.5 1 2.5 2.2S17.5 8 16 8"/></svg>
+      Deko & Sonstiges <span class="count" id="count-deko">0</span>
+    </button>
+  </div>
+
+  <!-- GETRÄNKE -->
+  <section class="panel active" id="panel-getraenke">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" id="progress-getraenke"></div></div>
+      <div class="progress-txt" id="progress-txt-getraenke">0/0 besorgt</div>
+    </div>
+    <form class="add-form" data-list="getraenke">
+      <input type="text" placeholder="z. B. Bier, Radler, Wasser…" required maxlength="60">
+      <input type="number" min="1" value="1" title="Menge">
+      <button type="submit" class="btn btn-primary">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Hinzufügen
+      </button>
+    </form>
+    <div class="list" id="list-getraenke"></div>
+  </section>
+
+  <!-- ESSEN -->
+  <section class="panel" id="panel-essen">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" id="progress-essen"></div></div>
+      <div class="progress-txt" id="progress-txt-essen">0/0 besorgt</div>
+    </div>
+    <form class="add-form" data-list="essen">
+      <input type="text" placeholder="z. B. Salate, Grillfleisch, Kuchen…" required maxlength="60">
+      <input type="number" min="1" value="1" title="Menge">
+      <button type="submit" class="btn btn-primary">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Hinzufügen
+      </button>
+    </form>
+    <div class="list" id="list-essen"></div>
+  </section>
+
+  <!-- DEKO / SONSTIGES -->
+  <section class="panel" id="panel-deko">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" id="progress-deko"></div></div>
+      <div class="progress-txt" id="progress-txt-deko">0/0 erledigt</div>
+    </div>
+    <form class="add-form" data-list="deko">
+      <input type="text" placeholder="z. B. Servietten, Musikbox, Ballons…" required maxlength="60">
+      <input type="number" min="1" value="1" title="Menge">
+      <button type="submit" class="btn btn-primary">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Hinzufügen
+      </button>
+    </form>
+    <div class="list" id="list-deko"></div>
+  </section>
+
+  <div class="notes-section">
+    <div class="section-title">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v14H8l-4 4z"/><path d="M8 9h8M8 13h5"/></svg>
+      Sonstige Notizen
+    </div>
+    <textarea id="notizen" placeholder="Ideen, Absprachen, wer was mitbringt…"></textarea>
+  </div>
+
+  <footer>Für Vincent & Kevins 30.</footer>
+</div>
+
+<div class="save-toast" id="toast">
+  <svg class="icon" viewBox="0 0 24 24" style="width:13px;height:13px;"><path d="M5 12l4 4 10-10"/></svg>
+  <span id="toast-text">Gespeichert</span>
+</div>
+
+<script>
+const EVENT_DATE = new Date('2026-08-15T00:00:00');
+let toastTimer = null;
+
+// ---- Supabase-Zugangsdaten hier eintragen (aus Project Settings -> API) ----
+const SUPABASE_URL = 'DEINE_SUPABASE_URL_HIER';
+const SUPABASE_ANON_KEY = 'DEIN_ANON_KEY_HIER';
+// -----------------------------------------------------------------------------
+
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toast-text').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 1300);
+}
+
+const LISTS = ['getraenke','essen','deko'];
+let state = { getraenke:[], essen:[], deko:[], uhrzeit:'' };
+
+function renderCounts(){
+  LISTS.forEach(l=>{
+    document.getElementById('count-'+l).textContent = state[l].length;
+  });
+  let openTotal = 0;
+  LISTS.forEach(l=>{ openTotal += state[l].filter(i=>!i.done).length; });
+  document.getElementById('total-todo').textContent = openTotal;
+}
+
+function renderProgress(listKey){
+  const items = state[listKey];
+  const total = items.length;
+  const done = items.filter(i=>i.done).length;
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('progress-'+listKey).style.width = pct + '%';
+  document.getElementById('progress-txt-'+listKey).textContent = `${done}/${total} besorgt`;
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+const CHECK_SVG = '<svg class="icon" viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg>';
+const TRASH_SVG = '<svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/></svg>';
+const EMPTY_SVG = '<svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v14H8l-4 4z"/></svg>';
+
+function renderList(listKey){
+  const container = document.getElementById('list-'+listKey);
+  const items = state[listKey];
+  if(items.length === 0){
+    container.innerHTML = `<div class="empty">${EMPTY_SVG}Noch nichts hier – füge oben den ersten Punkt hinzu.</div>`;
+    renderProgress(listKey);
+    return;
+  }
+  container.innerHTML = items.map(item => `
+    <div class="item ${item.done ? 'done':''}" data-id="${item.id}">
+      <div class="check" data-action="toggle">${item.done ? CHECK_SVG : ''}</div>
+      <div class="item-name">${escapeHtml(item.name)}</div>
+      <div class="qty-ctrl">
+        <button type="button" data-action="dec">−</button>
+        <span>${item.qty}</span>
+        <button type="button" data-action="inc">+</button>
+      </div>
+      <button type="button" class="del" data-action="del" title="Löschen">${TRASH_SVG}</button>
+    </div>
+  `).join('');
+  renderProgress(listKey);
+  renderCounts();
+}
+
+// Tabs
+document.getElementById('tabs').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.tab-btn');
+  if(!btn) return;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+});
+
+// Add forms
+document.querySelectorAll('.add-form').forEach(form=>{
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const listKey = form.dataset.list;
+    const nameInput = form.querySelector('input[type="text"]');
+    const qtyInput = form.querySelector('input[type="number"]');
+    const name = nameInput.value.trim();
+    if(!name) return;
+
+    const qty = qtyInput ? Math.max(1, parseInt(qtyInput.value) || 1) : 1;
+    nameInput.value = '';
+    if(qtyInput) qtyInput.value = 1;
+
+    const { error } = await supabaseClient
+      .from('items')
+      .insert({ category: listKey, name, qty, done: false });
+
+    if(error){
+      console.error(error);
+      showToast('Speichern fehlgeschlagen');
+    } else {
+      showToast('Gespeichert');
+      await loadList(listKey);
+    }
+  });
+});
+
+// List item interactions
+LISTS.forEach(listKey=>{
+  document.getElementById('list-'+listKey).addEventListener('click', async (e)=>{
+    const itemEl = e.target.closest('.item');
+    if(!itemEl) return;
+    const action = e.target.closest('[data-action]')?.dataset.action;
+    const id = itemEl.dataset.id;
+    const item = state[listKey].find(i=>i.id===id);
+    if(!item) return;
+
+    let error = null;
+
+    if(action === 'toggle'){
+      ({ error } = await supabaseClient.from('items').update({ done: !item.done }).eq('id', id));
+    } else if(action === 'inc'){
+      ({ error } = await supabaseClient.from('items').update({ qty: item.qty + 1 }).eq('id', id));
+    } else if(action === 'dec'){
+      ({ error } = await supabaseClient.from('items').update({ qty: Math.max(1, item.qty - 1) }).eq('id', id));
+    } else if(action === 'del'){
+      ({ error } = await supabaseClient.from('items').delete().eq('id', id));
+    }
+
+    if(error){
+      console.error(error);
+      showToast('Speichern fehlgeschlagen');
+    } else {
+      await loadList(listKey);
+    }
+  });
+});
+
+async function saveSetting(key, value){
+  const { error } = await supabaseClient
+    .from('settings')
+    .upsert({ key, value }, { onConflict: 'key' });
+  if(error){
+    console.error(error);
+    showToast('Speichern fehlgeschlagen');
+  } else {
+    showToast('Gespeichert');
+  }
+}
+
+// Uhrzeit
+const uhrzeitInput = document.getElementById('uhrzeit-input');
+let uhrzeitTimer = null;
+uhrzeitInput.addEventListener('input', ()=>{
+  clearTimeout(uhrzeitTimer);
+  uhrzeitTimer = setTimeout(async ()=>{
+    state.uhrzeit = uhrzeitInput.value;
+    await saveSetting('uhrzeit', state.uhrzeit);
+  }, 600);
+});
+
+// Notizen
+const notizenEl = document.getElementById('notizen');
+let notizenTimer = null;
+notizenEl.addEventListener('input', ()=>{
+  clearTimeout(notizenTimer);
+  notizenTimer = setTimeout(async ()=>{
+    await saveSetting('notizen', notizenEl.value);
+  }, 700);
+});
+
+// Countdown
+function renderCountdown(){
+  const now = new Date();
+  const diffMs = EVENT_DATE - now;
+  const days = Math.max(0, Math.ceil(diffMs / (1000*60*60*24)));
+  document.getElementById('days-left').textContent = days;
+}
+
+async function loadList(listKey){
+  const { data, error } = await supabaseClient
+    .from('items')
+    .select('*')
+    .eq('category', listKey)
+    .order('created_at', { ascending: true });
+  if(error){ console.error(error); return; }
+  state[listKey] = data;
+  renderList(listKey);
+}
+
+async function loadSettings(){
+  const { data, error } = await supabaseClient.from('settings').select('*');
+  if(error){ console.error(error); return; }
+  const map = Object.fromEntries(data.map(r => [r.key, r.value]));
+  state.uhrzeit = map.uhrzeit || '';
+  if(state.uhrzeit) uhrzeitInput.value = state.uhrzeit;
+  if(map.notizen) notizenEl.value = map.notizen;
+}
+
+// Init: alles aus Supabase laden
+async function init(){
+  renderCountdown();
+
+  for(const l of LISTS){
+    await loadList(l);
+  }
+  await loadSettings();
+  renderCounts();
+
+  // Live-Sync: Änderungen von anderen Geräten automatisch übernehmen
+  supabaseClient
+    .channel('party-planer-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'items' }, async (payload) => {
+      const cat = payload.new?.category || payload.old?.category;
+      if(cat) await loadList(cat);
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'settings' }, async () => {
+      await loadSettings();
+    })
+    .subscribe();
+}
+
+init();
+</script>
+</body>
+</html>
